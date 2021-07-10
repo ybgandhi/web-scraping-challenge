@@ -16,4 +16,14 @@ def chrome_browser():
 
 def scrape():
     browser = chrome_browser()
-     
+
+    ## NASA Mars News
+    url = 'https://mars.nasa.gov/news/'
+    browser.visit(url)
+
+    #set timer for processing break
+    time.sleep(1)
+
+    #scrape using soup
+    html = browser.html
+    soup = bs(html, 'html_parser')
