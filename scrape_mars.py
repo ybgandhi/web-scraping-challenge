@@ -15,8 +15,8 @@ import os
 def chrome_browser():
     # set up splinter
     executable_path = {'executable_path': ChromeDriverManager().install()}
-    return Browser('chrome', **executable_path)
-    #return Browser('chrome', **executable_path, headless=False)
+    #return Browser('chrome', **executable_path)
+    return Browser('chrome', **executable_path, headless=False)
 
 def scrape():
     browser = chrome_browser()
@@ -76,5 +76,67 @@ def scrape():
     fact_table_html.replace('\n','')
     #print(fact_table_html)
 
+    #************************************************
+    ## Mars Hemipheres
+    #************************************************
 
+    #setup splinter
+    executable_path = {'executable_path': ChromeDriverManager().install()}
+    browser = Browser('chrome', **executable_path, headless=False)
 
+    # scrape hemisphere website
+    hemisphere_url = "https://marshemispheres.com/"
+    browser.visit(hemisphere_url)
+    html = browser.html
+    hemi_soup = bs(html, 'html.parser')
+
+    # extract hemispheres item elements
+    hemisphere = hemi_soup.find_all('div', class_='description')
+    print(hemisphere)
+    
+    # set up empty list to store all image and url string
+    hemisphere_list = []
+
+    # loop through each hemisphere that are on Mars
+    for item in range(len(hemisphere)):
+        hemisphere_link = browser.find_by_css('a.product-item h3')
+        hemisphere_link[item].click()
+        time.sleep(1)
+        #print(hemisphere_link)
+        
+        img_html = browser.html
+        img_soup = bs(img_html, 'html.parser')
+        
+        img_title = img_soup.find('h2',class_='title').text
+        
+        img_find_class = img_soup.find('div', class_="downloads")
+        img_find_click = img_find_class.find('li')
+        img_find = img_find_click.find('a')['href']
+        
+        img_url = f"{hemisphere_url}/{img_find}"
+        
+        hemisphere_list.append({"title":img_title,
+                        "img_url":img_url})
+        browser.back()
+
+    hemisphere_list
+    browser.quit()
+
+    #************************************************
+    ## store in dictionary
+    #************************************************
+    scraped_data = {
+        "title_part": title,
+        "news": news_para,
+        "featured_image": featured_image_url,
+        "mars_table": html_table,
+        "hemisphere_images": hemi_list 
+    }
+    '''
+    browser.quit()
+    scraped_data={
+        "title": title,
+        "news_para": news_para,
+    }'''
+
+    return scraped_data
