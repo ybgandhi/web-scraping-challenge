@@ -32,7 +32,7 @@ def scrape():
 
     # scrape using soup
     html = browser.html
-    soup = bs(html, 'html_parser')
+    soup = bs(html, 'html.parser')
 
     # retrieve title
     news_title = soup.find_all('div', class_='content_title')[0].text
@@ -70,7 +70,7 @@ def scrape():
     mars_fact.set_index("Profile",inplace=True)
     mars_fact
 
-    fact_table_html=mars_fact.to_html()
+    fact_table_html=mars_fact.to_html(classes="table table-striped")
     fact_table_html
 
     fact_table_html.replace('\n','')
@@ -85,7 +85,7 @@ def scrape():
     browser = Browser('chrome', **executable_path, headless=False)
 
     # scrape hemisphere website
-    hemisphere_url = "https://marshemispheres.com/"
+    hemisphere_url = "https://marshemispheres.com"
     browser.visit(hemisphere_url)
     html = browser.html
     hemi_soup = bs(html, 'html.parser')
@@ -126,17 +126,10 @@ def scrape():
     ## store in dictionary
     #************************************************
     scraped_data = {
-        "title_part": title,
-        "news": news_para,
+        "title_part": news_title,
+        "news": news_p,
         "featured_image": featured_image_url,
-        "mars_table": html_table,
-        "hemisphere_images": hemi_list 
+        "mars_table": fact_table_html,
+        "hemisphere_images": hemisphere_list 
     }
-    '''
-    browser.quit()
-    scraped_data={
-        "title": title,
-        "news_para": news_para,
-    }'''
-
     return scraped_data
